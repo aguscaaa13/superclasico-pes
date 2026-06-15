@@ -32,13 +32,33 @@ def cargar_datos():
 try:
     df_hist, df_t1, df_t2 = cargar_datos()
     
-    # MARCADOR GLOBAL & PATERNIDAD
-    triunfos_vdg = int(df_hist.iloc[11, 1])
-    triunfos_sdc = int(df_hist.iloc[11, 4])
-    empates = int(df_hist.iloc[13, 1])
-    goles_vdg = int(df_hist.iloc[16, 1])
-    goles_sdc = int(df_hist.iloc[16, 4])
-    paternidad_texto = str(df_hist.iloc[18, 2])
+    # MARCADOR GLOBAL & PATERNIDAD (Usando manejo seguro de errores)
+    try:
+        triunfos_vdg = int(float(df_hist.iloc[11, 1]))
+    except:
+        triunfos_vdg = 0
+        
+    try:
+        triunfos_sdc = int(float(df_hist.iloc[11, 4]))
+    except:
+        triunfos_sdc = 0
+        
+    try:
+        empates = int(float(df_hist.iloc[13, 1]))
+    except:
+        empates = 0
+        
+    try:
+        goles_vdg = int(float(df_hist.iloc[16, 1]))
+    except:
+        goles_vdg = 0
+        
+    try:
+        goles_sdc = int(float(df_hist.iloc[16, 4]))
+    except:
+        goles_sdc = 0
+        
+    paternidad_texto = str(df_hist.iloc[18, 2]) if pd.notna(df_hist.iloc[18, 2]) else "En disputa"
     
     col1, col2, col3 = st.columns([2, 3, 2])
     
@@ -48,7 +68,7 @@ try:
         st.markdown(f"<h1 style='text-align: center; font-size: 60px; margin: 0;'>{triunfos_vdg} - {triunfos_sdc}</h1>", unsafe_allow_html=True)
         st.markdown(f"<p style='text-align: center; color: #ef4444; font-weight: bold;'>HISTORIAL A FAVOR DE: {paternidad_texto}</p>", unsafe_allow_html=True)
         
-        total_partidos = triumphs_vdg = triunfos_vdg + triunfos_sdc + empates
+        total_partidos = triunfos_vdg + triunfos_sdc + empates
         if total_partidos > 0:
             pct_vdg = triunfos_vdg / total_partidos
             pct_sdc = triunfos_sdc / total_partidos
@@ -117,4 +137,4 @@ try:
         st.dataframe(tabla_completa, use_container_width=True, hide_index=True)
 
 except Exception as e:
-    st.error(f"❌ Asegurate de subir el Excel con el nombre exacto 'SUPERCLASICO PES.xlsx' en la misma carpeta.")
+    st.error(f"❌ Error al procesar datos: {e}")
